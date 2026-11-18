@@ -26,6 +26,10 @@ class HubConfig {
   final List<SpotTag> spotTags;
   final String? exchangeTable;
   final String exchangeLabel;
+
+  /// 投稿ボード（4つ目のタブ）の投稿種別。`(id, 表示ラベル)` のリスト。
+  /// 既定はグッズのゆずりあい3種。コスとも！ハブは撮影報告4種に差し替える。
+  final List<(String, String)> exchangeKinds;
   final bool builtin;
 
   const HubConfig({
@@ -39,6 +43,11 @@ class HubConfig {
     this.spotTags = const [],
     this.exchangeTable,
     this.exchangeLabel = 'グッズ',
+    this.exchangeKinds = const [
+      ('give', 'ゆずります'),
+      ('wanted', '探してます'),
+      ('trade', '交換'),
+    ],
     this.builtin = true,
   });
 
@@ -47,6 +56,22 @@ class HubConfig {
 
   /// ゆずりあい・交換ボード対応ハブか
   bool get hasExchange => exchangeTable != null;
+
+  /// 種別idの表示ラベル（未知のidはそのまま返す）
+  String exchangeKindLabel(String id) {
+    for (final k in exchangeKinds) {
+      if (k.$1 == id) return k.$2;
+    }
+    return id;
+  }
+
+  /// 種別idの設定内での位置（カードの色分けに使う。未知は0）
+  int exchangeKindIndex(String id) {
+    for (var i = 0; i < exchangeKinds.length; i++) {
+      if (exchangeKinds[i].$1 == id) return i;
+    }
+    return 0;
+  }
 }
 
 /// Phase 3（UGCハブ）でユーザーが作った設定をDB（hub_configs）から復元する型。
@@ -239,8 +264,14 @@ const List<HubConfig> builtinHubs = [
       SpotTag('amenity', 'place_of_worship', '神社・お寺'),
       SpotTag('amenity', 'events_venue', 'イベント会場'),
     ],
-    exchangeTable: 'costume_exchanges',
-    exchangeLabel: 'コスプレ衣装・用品',
+    exchangeTable: 'shoot_reports',
+    exchangeLabel: '撮影報告',
+    exchangeKinds: [
+      ('shoot', '撮影'),
+      ('spot', '場所'),
+      ('event', 'イベント'),
+      ('art', '絵'),
+    ],
   ),
   HubConfig(
     appId: 'hashitomo',

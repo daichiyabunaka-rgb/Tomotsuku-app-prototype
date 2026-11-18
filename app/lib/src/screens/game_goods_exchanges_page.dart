@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../hub_registry.dart';
 import '../models.dart';
 import '../services/app_state.dart';
 import '../util/format.dart';
@@ -10,9 +11,10 @@ import 'game_goods_exchange_create_sheet.dart';
 import 'user_detail_screen.dart';
 import 'widgets.dart';
 
-/// 「ゆずりあい・交換」タブ: ゲームグッズのゆずり合い・交換の情報を近隣で
-/// 共有する（FR-7-1〜7-4 相当）。
-/// 金銭取引は本アプリでは行わない（ゲームセンターの入口前・公共の場での受け渡し前提）。
+/// 投稿ボードのタブ（4つ目のタブ）。
+/// ハブごとの設定（HubConfig.exchangeKinds / exchangeLabel）で
+/// 「グッズのゆずりあい・交換」（give/wanted/trade）と
+/// 「撮影報告」（shoot/spot/event/art。コスとも！ハブ）を同じUIで使う。
 class GameGoodsExchangesPage extends StatefulWidget {
   const GameGoodsExchangesPage({super.key});
 
@@ -21,15 +23,20 @@ class GameGoodsExchangesPage extends StatefulWidget {
 }
 
 class _GameGoodsExchangesPageState extends State<GameGoodsExchangesPage> {
-  String _filter = 'all'; // 'all' | 'give' | 'wanted' | 'trade'
+  String _filter = 'all'; // 'all' | 各ハブの種別id
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final hub = hubRegistry.active;
+    final isGoodsBoard = hub.exchangeKinds.any((k) => k.$1 == 'give');
+    final title = isGoodsBoard ? 'ゆずりあい・交換' : hub.exchangeLabel;
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showGameGoodsExchangeCreateSheet(context),
-        icon: const Icon(Icons.swap_horiz),
+        icon: isGoodsBoard
+            ? const Icon(Icons.swap_horiz)
+            : const Icon(Icons.photo_camera),
         label: const Text('登録する'),
       ),
       body: SafeArea(
@@ -47,18 +54,17 @@ class _GameGoodsExchangesPageState extends State<GameGoodsExchangesPage> {
                 padding: const EdgeInsets.all(16),
                 children: [
                   Text(
-                    'ゆずりあい・交換',
+                    title,
                     style: theme.textTheme.titleLarge!.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   SegmentedButton<String>(
-                    segments: const [
-                      ButtonSegment(value: 'all', label: Text('すべて')),
-                      ButtonSegment(value: 'give', label: Text('ゆずります')),
-                      ButtonSegment(value: 'wanted', label: Text('探してます')),
-                      ButtonSegment(value: 'trade', label: Text('交換')),
+                    segments: [
+                      const ButtonSegment(value: 'all', label: Text('すべて')),
+                      for (final k in hub.exchangeKinds)
+                        ButtonSegment(value: k.$1, label: Text(k.$2)),
                     ],
                     selected: {_filter},
                     onSelectionChanged: (s) =>
@@ -66,16 +72,23 @@ class _GameGoodsExchangesPageState extends State<GameGoodsExchangesPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '近くで登録された情報を近い順に表示します。使わなくなったソフトや'
-                    '周辺機器のゆずり合い・交換の募集をして、同じ趣味の仲間と'
-                    'つながりましょう。',
+                    isGoodsBoard
+                        ? '近くで登録された情報を近い順に表示します。使わなくなったグッズの'
+                            'ゆずり合い・交換の募集をして、同じ趣味の仲間と'
+                            'つながりましょう。'
+                        : '近くで報告された${hub.name}の投稿を近い順に表示します。'
+                            '報告を見て、撮影仲間や同じ作品の仲間とつながりましょう。',
                     style: theme.textTheme.bodySmall,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '※金銭のやりとりは禁止です（フリマアプリを利用してください）。'
-                    '受け渡しはイベント会場や公共の場で行い、'
-                    '初めて会う場合は人目のある場所を選んでください。',
+                    isGoodsBoard
+                        ? '※金銭のやりとりは禁止です（フリマアプリを利用してください）。'
+                            '受け渡しはイベント会場や公共の場で行い、'
+                            '初めて会う場合は人目のある場所を選んでください。'
+                        : '※本人が写る画像は本人・撮影者の許諾を得たものだけ'
+                            '投稿してください。他人の無断撮影・無断転載・性的な内容は'
+                            '禁止です。違反は削除・通報の対象になります。',
                     style: theme.textTheme.labelSmall!.copyWith(
                       color: Colors.grey.shade600,
                     ),
@@ -105,23 +118,24 @@ class _GameGoodsExchangesPageState extends State<GameGoodsExchangesPage> {
 
   Widget _exchangeCard(BuildContext context, GameGoodsExchange d) {
     final theme = Theme.of(context);
+    final hub = hubRegistry.active;
     final poster = appState.userById(d.posterId);
     final isMine = d.posterId == appState.me!.id;
     final now = DateTime.now();
-    final giveColor = Colors.teal.shade700;
-    final wantedColor = Colors.red.shade700;
-    final tradeColor = Colors.indigo.shade700;
-    final color =
-        d.isGive ? giveColor : (d.isWanted ? wantedColor : tradeColor);
-    final bg = d.isGive
-        ? Colors.teal.shade50
-        : (d.isWanted ? Colors.red.shade50 : Colors.indigo.shade50);
-    final border = d.isGive
-        ? Colors.teal.shade200
-        : (d.isWanted ? Colors.red.shade200 : Colors.indigo.shade200);
-    final label = d.isGive
-        ? 'ゆずります'
-        : (d.isWanted ? '探してます' : '交換');
+    // 種別ごとの色（ハブの種別順にパレットを割り当てる）
+    const palettes = [
+      (Colors.teal, Colors.teal), // 0
+      (Colors.red, Colors.red),   // 1
+      (Colors.indigo, Colors.indigo), // 2
+      (Colors.blue, Colors.blue), // 3
+      (Colors.orange, Colors.orange), // 4
+    ];
+    final i = hub.exchangeKindIndex(d.kind);
+    final palette = palettes[i % palettes.length];
+    final color = palette.$1.shade700;
+    final bg = palette.$1.shade50;
+    final border = palette.$2.shade200;
+    final label = hub.exchangeKindLabel(d.kind);
     return Card(
       margin: const EdgeInsets.only(top: 10),
       child: Padding(
@@ -295,7 +309,7 @@ class _GameGoodsExchangesPageState extends State<GameGoodsExchangesPage> {
       builder: (dialogContext) => AlertDialog(
         title: const Text('完了にしますか？'),
         content: const Text(
-          '受け渡し・交換が成立した場合に設定します。'
+          '投稿を一覧から外す場合に設定します。'
           '完了にした登録は一覧から表示されなくなります。',
         ),
         actions: [

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import '../hub_registry.dart';
 import '../models.dart';
 
 /// モックユーザーは「anchor（中心点）からの相対距離」で配置する。
@@ -150,6 +151,44 @@ const List<_MockSpec> _specs = [
     -1.4,
     -0.8,
   ),
+  // ---- コスとも！ハブ
+  _MockSpec(
+    'u-anime-rei',
+    'costomo',
+    'コス歴2年のれい',
+    '20代',
+    'female',
+    'anime',
+    ['anime', 'photo', 'event'],
+    'アニメのキャラを中心にやっています。撮影仲間を探しています。',
+    -0.7,
+    1.2,
+  ),
+  _MockSpec(
+    'u-comic-nana',
+    'costomo',
+    '漫画好きのなな',
+    '30代',
+    'female',
+    'comic',
+    ['comic', 'photo', 'edit'],
+    '漫画原作のキャラをよくやります。加工も自分でやっています。',
+    1.1,
+    -0.9,
+  ),
+  // ---- スポとも！ハブ
+  _MockSpec(
+    'u-futsal-taiga',
+    'supotomo',
+    'フットサルのたいが',
+    '20代',
+    'male',
+    'futsal',
+    ['futsal', 'watch'],
+    '平日夜にフットサルしています。体験歓迎のメンバー募集中です。',
+    0.4,
+    1.4,
+  ),
 ];
 
 class _BusinessSpec {
@@ -222,6 +261,9 @@ const Map<String, String> mockUserHubs = {
   'u-camp-rika': 'campotomo',
   'u-touge-akira': 'hashitomo',
   'u-band-sora': 'ototomo',
+  'u-anime-rei': 'costomo',
+  'u-comic-nana': 'costomo',
+  'u-futsal-taiga': 'supotomo',
   'b-arcade-sakura': 'gametomo',
   'b-jansou-miyako': 'janotomo',
   'b-sento-yumegaoka': 'yutomo',
@@ -373,6 +415,7 @@ class _ExchangeSeedSpec {
 }
 
 const List<_ExchangeSeedSpec> _exchangeSeedSpecs = [
+  // ---- ゲーとも！ハブ（グッズのゆずりあい）
   _ExchangeSeedSpec(
     'cx-seed-1',
     'u-goods-hina',
@@ -387,6 +430,19 @@ const List<_ExchangeSeedSpec> _exchangeSeedSpecs = [
   ),
   _ExchangeSeedSpec(
     'cx-seed-2',
+    'u-shooter-ken',
+    'wanted',
+    '中古のアーケードスティックを探しています',
+    'ゲームセンター 桜荘 周辺',
+    '格ゲー対策用に練習したいので探しています。'
+        '不要グッズとの交換の対応も可能です。',
+    -0.5,
+    1.0,
+    Duration(hours: 9),
+  ),
+  // ---- 雀とも！ハブ
+  _ExchangeSeedSpec(
+    'cx-seed-3',
     'u-beginner-nana',
     'wanted',
     '中古の麻雀牌セットを探しています',
@@ -397,8 +453,9 @@ const List<_ExchangeSeedSpec> _exchangeSeedSpecs = [
     0.8,
     Duration(hours: 5),
   ),
+  // ---- 湯とも！ハブ
   _ExchangeSeedSpec(
-    'cx-seed-3',
+    'cx-seed-4',
     'u-sento-mio',
     'trade',
     'サウナハット（未使用）と バスマットを交換します',
@@ -409,14 +466,107 @@ const List<_ExchangeSeedSpec> _exchangeSeedSpecs = [
     -0.3,
     Duration(hours: 26),
   ),
+  // ---- 走りとも！ハブ
+  _ExchangeSeedSpec(
+    'cx-seed-5',
+    'u-touge-akira',
+    'give',
+    '中古のフルフェイスヘルメットをゆずります',
+    '市役所裏の公園 周辺',
+    'サイズが合わなくなったためゆずります。'
+        '人目のある場所で手渡しします。',
+    0.9,
+    1.1,
+    Duration(hours: 4),
+  ),
+  // ---- キャンとも！ハブ
+  _ExchangeSeedSpec(
+    'cx-seed-6',
+    'u-camp-daiki',
+    'trade',
+    '焚き火台（小）とランタンを交換します',
+    'キャンプ場 フォーサイト 周辺',
+    '買い替えで余ったため交換希望です。'
+        'キャンプ場の管理棟前で受け渡しできます。',
+    -0.6,
+    -0.7,
+    Duration(hours: 12),
+  ),
+  // ---- 音とも！ハブ
+  _ExchangeSeedSpec(
+    'cx-seed-7',
+    'u-band-sora',
+    'wanted',
+    '中古のエレキギターの練習用アンプを探しています',
+    '市役所裏の公園 周辺',
+    '自宅練習用に探しています。状態は問いません。'
+        '公共の場所での受け渡し希望です。',
+    -1.2,
+    0.6,
+    Duration(hours: 30),
+  ),
+  // ---- スポとも！ハブ
+  _ExchangeSeedSpec(
+    'cx-seed-8',
+    'u-futsal-taiga',
+    'trade',
+    'サッカーボール（使用済み・状態良好）と交換します',
+    '区民体育館 周辺',
+    '練習球が増えたため交換希望です。'
+        '体育館の入口前で受け渡しできます。',
+    0.7,
+    -1.2,
+    Duration(hours: 18),
+  ),
+  // ---- コスとも！ハブ（撮影報告）
+  _ExchangeSeedSpec(
+    'cx-seed-9',
+    'u-anime-rei',
+    'shoot',
+    '○○の学生服を撮影してきました',
+    '中央公園 周辺',
+    '夕方の斜光で綺麗に撮れました。撮影同伴の'
+        'コス友達と一緒に撮影した報告です。',
+    -0.7,
+    1.2,
+    Duration(hours: 2),
+  ),
+  _ExchangeSeedSpec(
+    'cx-seed-10',
+    'u-comic-nana',
+    'spot',
+    '駅東側のレンガ倉庫がおすすめ',
+    '駅東側のイベント会場横',
+    '平日は人が少なく撮りやすいです。手前の路地も'
+        '雰囲気が出ます。朝の光がおすすめ。',
+    1.1,
+    -0.9,
+    Duration(hours: 5),
+  ),
+  _ExchangeSeedSpec(
+    'cx-seed-11',
+    'u-anime-rei',
+    'art',
+    '○○のキャラを描いてみました',
+    '',
+    'コス衣装の参考にした塗り方を試してみました。'
+        '同じ作品好きの人と交流したいです。',
+    -0.4,
+    -0.2,
+    Duration(hours: 16),
+  ),
 ];
 
 List<GameGoodsExchange> buildSeedGameGoodsExchanges(
     DateTime now, double anchorLat, double anchorLng) {
   final cos = (anchorLat * math.pi / 180.0).abs().clamp(0.01, 1.0);
+  // シードは「投稿者が表示中ハブのユーザー」のものだけ出す
+  // （ハブ違いの投稿者はカード表示時にユーザーが引けなくなるため）
+  final hubId = hubRegistry.active.appId;
   return [
     for (final s in _exchangeSeedSpecs)
-      GameGoodsExchange(
+      if (mockUserHubs[s.posterId] == hubId)
+        GameGoodsExchange(
         id: s.id,
         posterId: s.posterId,
         kind: s.kind,

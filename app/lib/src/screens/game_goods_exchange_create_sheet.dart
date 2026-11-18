@@ -3,11 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../hub_registry.dart';
+import '../models.dart';
 import '../services/app_state.dart';
 import '../services/icon_service.dart';
 
-/// ゆずりあい・交換の登録シート（FR-7-1相当）。
-/// kind: 'give'（ゆずります）/ 'wanted'（探しています）/ 'trade'（交換します）
+/// 投稿ボードの登録シート（FR-7-1相当）。
+/// 種別（kind）はハブごとの設定（HubConfig.exchangeKinds）で決まる。
+/// グッズ系: give / wanted / trade、撮影報告系: shoot / spot / event / art。
 Future<void> showGameGoodsExchangeCreateSheet(BuildContext context) {
   return showModalBottomSheet<void>(
     context: context,
@@ -27,7 +30,7 @@ class _CreateSheetState extends State<_CreateSheet> {
   final _itemDescription = TextEditingController();
   final _areaName = TextEditingController();
   final _detail = TextEditingController();
-  String _kind = 'give';
+  String? _kind;
   String? _photoPath; // 選択した投稿写真（null=未選択, ''=解除）
   bool _submitting = false;
 
@@ -51,7 +54,7 @@ class _CreateSheetState extends State<_CreateSheet> {
     setState(() => _submitting = true);
     try {
       await appState.registerGameGoodsExchange(
-        kind: _kind,
+        kind: _kind!,
         itemDescription: _itemDescription.text.trim(),
         areaName: _areaName.text.trim(),
         detail: _detail.text.trim(),
@@ -83,6 +86,10 @@ class _CreateSheetState extends State<_CreateSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final hub = hubRegistry.active;
+    _kind ??= hub.exchangeKinds.first.$1;
+    // 種別の見た目（アイコン）と説明文言
+    final isShootBoard = !hub.exchangeKinds.any((k) => k.$1 == 'give');
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),
@@ -92,41 +99,25 @@ class _CreateSheetState extends State<_CreateSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('ゆずりあい・交換を登録する',
+            Text('${hub.exchangeLabel}を登録する',
                 style: theme.textTheme.titleLarge!
                     .copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(
-                  value: 'give',
-                  icon: Icon(Icons.redeem),
-                  label: Text('ゆずります'),
-                ),
-                ButtonSegment(
-                  value: 'wanted',
-                  icon: Icon(Icons.search),
-                  label: Text('探してます'),
-                ),
-                ButtonSegment(
-                  value: 'trade',
-                  icon: Icon(Icons.swap_horiz),
-                  label: Text('交換します'),
-                ),
+              segments: [
+                for (final k in hub.exchangeKinds)
+                  ButtonSegment(
+                    value: k.$1,
+                    icon: Icon(_kindIcon(k.$1)),
+                    label: Text(k.$2),
+                  ),
               ],
-              selected: {_kind},
+              selected: {_kind!},
               onSelectionChanged: (s) => setState(() => _kind = s.first),
             ),
             const SizedBox(height: 4),
             Text(
-              _kind == 'give'
-                  ? '使わなくなったゲームグッズをゆずる場合の登録です。\n'
-                      '※金銭のやりとりは禁止です。受け渡しはゲームセンターの入口前や公共の場で行ってください。'
-                  : _kind == 'wanted'
-                      ? '探しているゲームグッズの登録です。\n'
-                          '※個人の住所・連絡先は記入しないでください。DMでやりとりしましょう。'
-                      : 'ゲームグッズの交換の登録です。\n'
-                          '※金銭のやりとりは禁止です。同価値での交換を前提とし、条件はDMで相談してください。',
+              exchangeKindNote(_kind!),
               style: theme.textTheme.labelSmall!
                   .copyWith(color: Colors.grey.shade600),
             ),
@@ -134,17 +125,21 @@ class _CreateSheetState extends State<_CreateSheet> {
             TextField(
               controller: _itemDescription,
               maxLength: 40,
-              decoration: const InputDecoration(
-                labelText: '用品の内容',
-                hintText: '例: ゲームソフト（中古・箱説明書付き）',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: isShootBoard
+                    ? 'タイトル（キャラ名・作品名など）'
+                    : 'グッズの内容',
+                hintText: isShootBoard
+                    ? '例: ○○の衣装を撮影してきました'
+                    : '例: ゲームソフト（中古・箱説明書付き）',
+                border: const OutlineInputBorder(),
                 counterText: '',
               ),
             ),
             const SizedBox(height: 12),
 
             // ------------------------------ 投稿写真（任意）
-            Text('写真（任意。状態が伝わる写真を）',
+            Text('写真（任意。報告・状態のわかる写真を）',
                 style: theme.textTheme.titleSmall),
             const SizedBox(height: 8),
             Row(
@@ -186,8 +181,10 @@ class _CreateSheetState extends State<_CreateSheet> {
               controller: _areaName,
               maxLength: 30,
               decoration: InputDecoration(
-                labelText: _kind == 'wanted' ? '探している地域・イベント名' : '受け渡し希望の地域・イベント名',
-                hintText: '例: ○○市周辺 / ○○ゲームセンターの入口前',
+                labelText: _kind == 'wanted'
+                    ? '探している地域・イベント名'
+                    : (isShootBoard ? '撮影した場所' : '受け渡し希望の地域・イベント名'),
+                hintText: '例: ○○市周辺 / ○○会場の入口前',
                 border: const OutlineInputBorder(),
                 counterText: '',
               ),
@@ -197,10 +194,12 @@ class _CreateSheetState extends State<_CreateSheet> {
               controller: _detail,
               maxLines: 3,
               maxLength: 200,
-              decoration: const InputDecoration(
-                labelText: '状態・条件・受け渡し方法など',
-                hintText: '例: 使用済み・揃い済み。○○ゲームセンターの入口前で受け渡しできます',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: isShootBoard ? '撮影状況・ハイライトなど' : '状態・条件・受け渡し方法など',
+                hintText: isShootBoard
+                    ? '例: 夕方の斜光で撮影。時間帯もおすすめです'
+                    : '例: 使用済み・揃い済み。○○の入口前で受け渡しできます',
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
@@ -220,9 +219,29 @@ class _CreateSheetState extends State<_CreateSheet> {
     );
   }
 
+  IconData _kindIcon(String kind) {
+    switch (kind) {
+      case 'shoot':
+        return Icons.photo_camera;
+      case 'spot':
+        return Icons.place;
+      case 'event':
+        return Icons.celebration;
+      case 'art':
+        return Icons.palette;
+      case 'wanted':
+        return Icons.search;
+      case 'trade':
+        return Icons.swap_horiz;
+      default:
+        return Icons.redeem;
+    }
+  }
+
+  /// 「絵」は場所の記入を必須にしない
   bool get _isValid =>
       _itemDescription.text.trim().isNotEmpty &&
-      _areaName.text.trim().isNotEmpty;
+      (_kind == 'art' || _areaName.text.trim().isNotEmpty);
 
   Widget _photoPreview(ThemeData theme) {
     final path = (_photoPath ?? '');

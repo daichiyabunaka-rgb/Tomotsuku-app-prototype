@@ -398,17 +398,16 @@ class CommunityEvent {
 }
 
 /// ゲームグッズの「ゆずりあい・交換」掲示板（近隣での情報共有）。
-/// kind: 'give'   = ゲームグッズをゆずります
-///       'wanted' = ゲームグッズを探しています
-///       'trade'  = 交換します
-/// 金銭取引は行わない（ゲームセンターの入口前・駅前広場での受け渡し・ゆずり合い前提）。
+/// 投稿ボード（4つ目のタブ）の1件。ハブごとに種別（kind）が異なる:
+///   グッズ系: 'give'(ゆずる) / 'wanted'(探す) / 'trade'(交換)
+///   撮影報告系（コスとも！ハブ）: 'shoot'(撮影) / 'spot'(場所) / 'event'(イベント) / 'art'(絵)
 class GameGoodsExchange {
   final String id;
   final String posterId;
-  final String kind; // 'give' | 'wanted' | 'trade'
-  final String itemDescription; // グッズ名（ソフト・コントローラー・フィギュア等の状態など）
+  final String kind;
+  final String itemDescription; // タイトル（グッズ名・キャラ名など）
   final String areaName; // 受け渡し希望地域やイベント名
-  final String detail; // 状態・受け渡し方法の自由記述
+  final String detail; // 状態・ハイライトなどの自由記述
   final String? photoPath; // 投稿写真（端末内パス or 公開URL）
   final double lat;
   final double lng;
@@ -429,14 +428,45 @@ class GameGoodsExchange {
     this.closed = false,
   });
 
-  /// ゆずります
+  /// ゆずります（グッズ系）
   bool get isGive => kind == 'give';
 
-  /// 探しています
+  /// 探しています（グッズ系）
   bool get isWanted => kind == 'wanted';
 
-  /// 交換します
+  /// 交換します（グッズ系）
   bool get isTrade => kind == 'trade';
+
+  /// 撮影報告（コスとも！ハブ）
+  bool get isShootReportKind =>
+      kind == 'shoot' || kind == 'spot' || kind == 'event' || kind == 'art';
+}
+
+/// 投稿ボードの種別ごとの注意文言（登録シートで使う）。
+String exchangeKindNote(String kind) {
+  switch (kind) {
+    case 'shoot':
+      return '撮ってきたコスプレ写真の報告です。\n'
+          '※本人が写る画像は本人・撮影者の許諾を得たものだけ投稿してください。';
+    case 'spot':
+      return 'おすすめの撮影スポット・状況の報告です。\n'
+          '※私有地・撮影禁止場所の無断撮影はやめましょう。';
+    case 'event':
+      return 'イベント会場での撮影報告です。\n'
+          '※会場の撮影規約・参加者の許諾を守ってください。';
+    case 'art':
+      return '描いた絵・ファンアートの投稿です。\n'
+          '※他人の作品の無断転載・トレースは禁止です。成人向けの画像も投稿できません。';
+    case 'wanted':
+      return '探しているものの登録です。\n'
+          '※個人の住所・連絡先は記入しないでください。DMでやりとりしましょう。';
+    case 'trade':
+      return '交換の登録です。\n'
+          '※金銭のやりとりは禁止です。条件はDMで相談してください。';
+    default: // 'give' ほか
+      return '使わなくなったグッズをゆずる場合の登録です。\n'
+          '※金銭のやりとりは禁止です。受け渡しは公共の場・人目のある場所で行ってください。';
+  }
 }
 
 class ChatMessage {
