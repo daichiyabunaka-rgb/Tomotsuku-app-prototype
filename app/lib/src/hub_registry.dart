@@ -15,6 +15,15 @@ class SpotTag {
 /// ハブ = 「ともつく！」シリーズの1アプリ相当の趣味ドメイン。
 /// 総合版（このアプリ）はこの設定を切り替えることで、
 /// 同じUI・同じDBをハブごとに使い分ける。
+
+/// 近況報告ボードの基本種別（撮影/つぶやき/イベント）。
+/// 2026-11-18: 全ハブの旧「ゆずりあい・交換」を近況報告に統一した。
+const List<(String, String)> recentReportKinds = [
+  ('shoot', '撮影'),
+  ('post', 'つぶやき'),
+  ('event', 'イベント'),
+];
+
 class HubConfig {
   final String appId;
   final String name;
@@ -28,7 +37,8 @@ class HubConfig {
   final String exchangeLabel;
 
   /// 投稿ボード（4つ目のタブ）の投稿種別。`(id, 表示ラベル)` のリスト。
-  /// 既定はグッズのゆずりあい3種。コスとも！ハブは撮影報告4種に差し替える。
+  /// 既定はグッズのゆずりあい3種（UGCハブ向け）。内蔵ハブは
+  /// 「近況報告」（shoot/撮影・post/つぶやき・event/イベント等）に統一。
   final List<(String, String)> exchangeKinds;
   final bool builtin;
 
@@ -56,6 +66,9 @@ class HubConfig {
 
   /// ゆずりあい・交換ボード対応ハブか
   bool get hasExchange => exchangeTable != null;
+
+  /// 近況報告系ボードか（種別に give を含まない）
+  bool get isRecentReportBoard => !exchangeKinds.any((k) => k.$1 == 'give');
 
   /// 種別idの表示ラベル（未知のidはそのまま返す）
   String exchangeKindLabel(String id) {
@@ -153,6 +166,9 @@ const List<HubConfig> builtinHubs = [
       InterestCategory('brunch', '朝食・ブランチ', Icons.brunch_dining),
     ],
     storeTypes: ['居酒屋', 'ラーメン店', '焼肉店', 'カフェ', 'そば・うどん', '寿司', 'イタリアン', '中華', 'その他'],
+    exchangeTable: 'meal_reports',
+    exchangeLabel: '近況報告',
+    exchangeKinds: recentReportKinds,
   ),
   HubConfig(
     appId: 'inutomo',
@@ -179,6 +195,9 @@ const List<HubConfig> builtinHubs = [
       InterestCategory('wanko', '犬友達・多頭飼い', Icons.diversity_1),
     ],
     storeTypes: ['ドッグラン', 'ドッグカフェ', 'ペットサロン・トリミング', '動物病院', 'ペットホテル', 'しつけ教室', 'ペット用品店', '保護犬・譲渡会運営', 'その他'],
+    exchangeTable: 'dog_reports',
+    exchangeLabel: '近況報告',
+    exchangeKinds: recentReportKinds,
   ),
   HubConfig(
     appId: 'tsuritomo',
@@ -234,6 +253,9 @@ const List<HubConfig> builtinHubs = [
       SpotTag('amenity', 'animal_shelter', '動物愛護施設'),
       SpotTag('amenity', 'veterinary', '動物病院'),
     ],
+    exchangeTable: 'cat_reports',
+    exchangeLabel: '近況報告',
+    exchangeKinds: recentReportKinds,
   ),
   HubConfig(
     appId: 'costomo',
@@ -265,10 +287,10 @@ const List<HubConfig> builtinHubs = [
       SpotTag('amenity', 'events_venue', 'イベント会場'),
     ],
     exchangeTable: 'shoot_reports',
-    exchangeLabel: '撮影報告',
+    exchangeLabel: '近況報告',
     exchangeKinds: [
       ('shoot', '撮影'),
-      ('spot', '場所'),
+      ('post', 'つぶやき'),
       ('event', 'イベント'),
       ('art', '絵'),
     ],
@@ -303,8 +325,9 @@ const List<HubConfig> builtinHubs = [
       SpotTag('highway', 'services', '道の駅/SA/PA'),
       SpotTag('tourism', 'viewpoint', '展望台'),
     ],
-    exchangeTable: 'parts_exchanges',
-    exchangeLabel: 'パーツ・用品',
+    exchangeTable: 'run_reports',
+    exchangeLabel: '近況報告',
+    exchangeKinds: recentReportKinds,
   ),
   HubConfig(
     appId: 'campotomo',
@@ -336,8 +359,9 @@ const List<HubConfig> builtinHubs = [
       SpotTag('tourism', 'caravan_site', 'キャラバンサイト'),
       SpotTag('tourism', 'alpine_hut', '山小屋'),
     ],
-    exchangeTable: 'gear_exchanges',
-    exchangeLabel: 'キャンプギア',
+    exchangeTable: 'camp_reports',
+    exchangeLabel: '近況報告',
+    exchangeKinds: recentReportKinds,
   ),
   HubConfig(
     appId: 'ototomo',
@@ -369,8 +393,9 @@ const List<HubConfig> builtinHubs = [
       SpotTag('amenity', 'concert_hall', 'コンサートホール'),
       SpotTag('amenity', 'studio', '音楽スタジオ'),
     ],
-    exchangeTable: 'instrument_exchanges',
-    exchangeLabel: '楽器・機材',
+    exchangeTable: 'music_reports',
+    exchangeLabel: '近況報告',
+    exchangeKinds: recentReportKinds,
   ),
   HubConfig(
     appId: 'yutomo',
@@ -402,8 +427,9 @@ const List<HubConfig> builtinHubs = [
       SpotTag('leisure', 'water_park', 'スパ・健康ランド'),
       SpotTag('leisure', 'sauna', 'サウナ施設'),
     ],
-    exchangeTable: 'bath_goods_exchanges',
-    exchangeLabel: 'サウナグッズ',
+    exchangeTable: 'bath_reports',
+    exchangeLabel: '近況報告',
+    exchangeKinds: recentReportKinds,
   ),
   HubConfig(
     appId: 'supotomo',
@@ -437,8 +463,13 @@ const List<HubConfig> builtinHubs = [
       SpotTag('leisure', 'pitch', 'グラウンド・コート'),
       SpotTag('leisure', 'track', '陸上トラック'),
     ],
-    exchangeTable: 'sports_goods_exchanges',
-    exchangeLabel: 'スポーツ用品',
+    exchangeTable: 'sports_reports',
+    exchangeLabel: '近況報告',
+    exchangeKinds: [
+      ('match', '試合'),
+      ('post', 'つぶやき'),
+      ('event', 'イベント'),
+    ],
   ),
   HubConfig(
     appId: 'janotomo',
@@ -469,8 +500,13 @@ const List<HubConfig> builtinHubs = [
       SpotTag('leisure', 'amusement_arcade', 'ゲームセンター・雀荘'),
       SpotTag('amenity', 'community_centre', '公民館・集会所'),
     ],
-    exchangeTable: 'mahjong_goods_exchanges',
-    exchangeLabel: '麻雀グッズ',
+    exchangeTable: 'mahjong_reports',
+    exchangeLabel: '近況報告',
+    exchangeKinds: [
+      ('agari', '上がり'),
+      ('post', 'つぶやき'),
+      ('event', 'イベント'),
+    ],
   ),
   HubConfig(
     appId: 'gametomo',
@@ -501,8 +537,9 @@ const List<HubConfig> builtinHubs = [
       SpotTag('leisure', 'amusement_arcade', 'ゲームセンター'),
       SpotTag('amenity', 'community_centre', '公民館・集会所'),
     ],
-    exchangeTable: 'game_goods_exchanges',
-    exchangeLabel: 'ゲームグッズ',
+    exchangeTable: 'game_reports',
+    exchangeLabel: '近況報告',
+    exchangeKinds: recentReportKinds,
   ),
 ];
 

@@ -10,7 +10,8 @@ import '../services/icon_service.dart';
 
 /// 投稿ボードの登録シート（FR-7-1相当）。
 /// 種別（kind）はハブごとの設定（HubConfig.exchangeKinds）で決まる。
-/// グッズ系: give / wanted / trade、撮影報告系: shoot / spot / event / art。
+/// 近況報告系: shoot / post / event / art / match / agari、
+/// グッズ系（UGCハブ）: give / wanted / trade。
 Future<void> showGameGoodsExchangeCreateSheet(BuildContext context) {
   return showModalBottomSheet<void>(
     context: context,
@@ -127,10 +128,10 @@ class _CreateSheetState extends State<_CreateSheet> {
               maxLength: 40,
               decoration: InputDecoration(
                 labelText: isShootBoard
-                    ? 'タイトル（キャラ名・作品名など）'
+                    ? 'タイトル（できごと・作品名など）'
                     : 'グッズの内容',
                 hintText: isShootBoard
-                    ? '例: ○○の衣装を撮影してきました'
+                    ? '例: 〇〇に行ってきました / 〇〇を撮影しました'
                     : '例: ゲームソフト（中古・箱説明書付き）',
                 border: const OutlineInputBorder(),
                 counterText: '',
@@ -183,7 +184,7 @@ class _CreateSheetState extends State<_CreateSheet> {
               decoration: InputDecoration(
                 labelText: _kind == 'wanted'
                     ? '探している地域・イベント名'
-                    : (isShootBoard ? '撮影した場所' : '受け渡し希望の地域・イベント名'),
+                    : (isShootBoard ? '場所・スポット名' : '受け渡し希望の地域・イベント名'),
                 hintText: '例: ○○市周辺 / ○○会場の入口前',
                 border: const OutlineInputBorder(),
                 counterText: '',
@@ -195,9 +196,9 @@ class _CreateSheetState extends State<_CreateSheet> {
               maxLines: 3,
               maxLength: 200,
               decoration: InputDecoration(
-                labelText: isShootBoard ? '撮影状況・ハイライトなど' : '状態・条件・受け渡し方法など',
+                labelText: isShootBoard ? '近況・ハイライトなど' : '状態・条件・受け渡し方法など',
                 hintText: isShootBoard
-                    ? '例: 夕方の斜光で撮影。時間帯もおすすめです'
+                    ? '例: 〇〇が最高でした。今度一緒にどうですか'
                     : '例: 使用済み・揃い済み。○○の入口前で受け渡しできます',
                 border: const OutlineInputBorder(),
               ),
@@ -223,12 +224,16 @@ class _CreateSheetState extends State<_CreateSheet> {
     switch (kind) {
       case 'shoot':
         return Icons.photo_camera;
-      case 'spot':
-        return Icons.place;
+      case 'post':
+        return Icons.chat_bubble_outline;
       case 'event':
         return Icons.celebration;
       case 'art':
         return Icons.palette;
+      case 'match':
+        return Icons.emoji_events;
+      case 'agari':
+        return Icons.casino;
       case 'wanted':
         return Icons.search;
       case 'trade':

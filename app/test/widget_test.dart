@@ -699,16 +699,17 @@ void main() {
       }
     });
 
-    test('ゆずりあい・交換: シードは近い順に並び、ゆずる・探す両方を含む', () async {
-      // ゆずりあいボードを持つのは特定ハブのみ（ホーム持たない）。
+    test('近況報告: シードは近い順に並び、撮影・つぶやき両方を含む', () async {
+      // 近況報告ボードを持つのは特定ハブのみ（ホームは持たない）。
       // ゲーとも！ハブに切り替えてから確認する
       final state = AppState();
       await state.switchHub(hubRegistry.byId('gametomo'));
       state.attachUser(_testUser(state), reseed: true);
       final items = state.partsExchanges;
       expect(items, isNotEmpty);
-      expect(items.any((p) => p.isGive), isTrue);
-      expect(items.any((p) => p.isWanted), isTrue);
+      expect(items.any((p) => p.isShootReportKind), isTrue);
+      expect(items.any((p) => p.kind == 'shoot'), isTrue);
+      expect(items.any((p) => p.kind == 'post'), isTrue);
       final me = state.me!;
       double km(GameGoodsExchange p) => haversineKm(me.lat, me.lng, p.lat, p.lng);
       for (var i = 1; i < items.length; i++) {
@@ -723,17 +724,17 @@ void main() {
       await state.switchHub(hubRegistry.home);
     });
 
-    test('ゆずりあい・交換: 登録して一覧に出し、完了で消える', () async {
+    test('近況報告: 登録して一覧に出し、完了で消える', () async {
       final state = AppState();
       state.attachUser(_testUser(state), reseed: true);
       final created = await state.registerGameGoodsExchange(
-        kind: 'give',
-        itemDescription: 'テスト用ゲームソフト（中古）',
+        kind: 'shoot',
+        itemDescription: 'テスト用の近況報告',
         areaName: 'テストゲームセンター前',
-        detail: 'テストゲームセンターの入口前で受け渡せます',
+        detail: '対戦台の写真を撮影しました',
         photoPath: '/data/item_photos/item_photo_1.jpg',
       );
-      expect(created.isGive, isTrue);
+      expect(created.isShootReportKind, isTrue);
       expect(created.photoPath, '/data/item_photos/item_photo_1.jpg');
       expect(
           state.partsExchanges.any((p) => p.id == created.id), isTrue);

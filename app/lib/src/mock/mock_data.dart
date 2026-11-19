@@ -189,6 +189,45 @@ const List<_MockSpec> _specs = [
     0.4,
     1.4,
   ),
+  // ---- 犬とも！ハブ
+  _MockSpec(
+    'u-sanpo-yuki',
+    'inutomo',
+    'お散歩のゆき',
+    '30代',
+    'female',
+    'sanpo',
+    ['sanpo', 'dogrun', 'photo'],
+    '毎日の愛犬とのお散歩が日課です。ドッグラン仲間を探しています。',
+    0.4,
+    0.9,
+  ),
+  // ---- 猫とも（ニーアキャット）ハブ
+  _MockSpec(
+    'u-catcafe-moka',
+    'nekotomo',
+    'ねこカフェのもか',
+    '20代',
+    'female',
+    'catcafe',
+    ['catcafe', 'photo', 'play'],
+    'ねこカフェ巡りが趣味です。猫仲間と情報交換したいです。',
+    -0.5,
+    0.35,
+  ),
+  // ---- 飯とも！ハブ
+  _MockSpec(
+    'u-ramen-ken',
+    'meshitomo',
+    'ラーメンのけん',
+    '30代',
+    'male',
+    'ramen',
+    ['ramen', 'izakaya', 'spicy'],
+    '週1でラーメン開拓。二郎系が好きです。一緒に行ける飯ともを探しています。',
+    0.2,
+    -0.8,
+  ),
 ];
 
 class _BusinessSpec {
@@ -264,6 +303,9 @@ const Map<String, String> mockUserHubs = {
   'u-anime-rei': 'costomo',
   'u-comic-nana': 'costomo',
   'u-futsal-taiga': 'supotomo',
+  'u-sanpo-yuki': 'inutomo',
+  'u-catcafe-moka': 'nekotomo',
+  'u-ramen-ken': 'meshitomo',
   'b-arcade-sakura': 'gametomo',
   'b-jansou-miyako': 'janotomo',
   'b-sento-yumegaoka': 'yutomo',
@@ -415,15 +457,15 @@ class _ExchangeSeedSpec {
 }
 
 const List<_ExchangeSeedSpec> _exchangeSeedSpecs = [
-  // ---- ゲーとも！ハブ（グッズのゆずりあい）
+  // ---- ゲーとも！ハブ（近況報告）
   _ExchangeSeedSpec(
     'cx-seed-1',
     'u-goods-hina',
-    'give',
-    'ゲームソフト（中古・箱説明書付き）',
+    'post',
+    '新作ソフトの発売日に並んできました',
     'ゲームセンター 桜荘 周辺',
-    '新しいソフトを買ったので、'
-        '使ってくださる方にゆずります。手渡し前提です。',
+    '限定版が無事ゲットできました。'
+        '一緒に遊ぶ仲間を募集しています。',
     0.3,
     -0.6,
     Duration(hours: 2),
@@ -431,11 +473,11 @@ const List<_ExchangeSeedSpec> _exchangeSeedSpecs = [
   _ExchangeSeedSpec(
     'cx-seed-2',
     'u-shooter-ken',
-    'wanted',
-    '中古のアーケードスティックを探しています',
+    'shoot',
+    'ゲーセンの対戦台を撮影しました',
     'ゲームセンター 桜荘 周辺',
-    '格ゲー対策用に練習したいので探しています。'
-        '不要グッズとの交換の対応も可能です。',
+    '久しぶりに格ゲーで対戦してきました。'
+        '練習仲間を探しています。',
     -0.5,
     1.0,
     Duration(hours: 9),
@@ -444,11 +486,11 @@ const List<_ExchangeSeedSpec> _exchangeSeedSpecs = [
   _ExchangeSeedSpec(
     'cx-seed-3',
     'u-beginner-nana',
-    'wanted',
-    '中古の麻雀牌セットを探しています',
-    '駅前広場 周辺',
-    '使い方の練習用に探しています。不要グッズとの'
-        '交換の対応も可能です。DMお待ちしています。',
+    'agari',
+    '教室ではじめて上がりました',
+    '雀荘 桜荘 周辺',
+    '役はタンヤオでした。これからも練習します。'
+        '丁寧に教えてくれる方も歓迎です。',
     -0.2,
     0.8,
     Duration(hours: 5),
@@ -457,11 +499,11 @@ const List<_ExchangeSeedSpec> _exchangeSeedSpecs = [
   _ExchangeSeedSpec(
     'cx-seed-4',
     'u-sento-mio',
-    'trade',
-    'サウナハット（未使用）と バスマットを交換します',
-    '市役所裏の公園 周辺',
-    '買い替えで余ったため交換希望です。状態は写真で'
-        '送ります。公共の場所で受け渡しできます。',
+    'post',
+    '今週は銭湯めぐりの予定です',
+    '銭湯 ゆめが岡 周辺',
+    '壁画が綺麗な銭湯に行ってみます。'
+        'おすすめの銭湯があれば教えてください。',
     -0.9,
     -0.3,
     Duration(hours: 26),
@@ -470,11 +512,11 @@ const List<_ExchangeSeedSpec> _exchangeSeedSpecs = [
   _ExchangeSeedSpec(
     'cx-seed-5',
     'u-touge-akira',
-    'give',
-    '中古のフルフェイスヘルメットをゆずります',
-    '市役所裏の公園 周辺',
-    'サイズが合わなくなったためゆずります。'
-        '人目のある場所で手渡しします。',
+    'shoot',
+    '峠の朝靄を撮影してきました',
+    '展望台 周辺',
+    '朝5時に合わせて行きました。'
+        '次のツーリングの同行者を募集しています。',
     0.9,
     1.1,
     Duration(hours: 4),
@@ -483,11 +525,11 @@ const List<_ExchangeSeedSpec> _exchangeSeedSpecs = [
   _ExchangeSeedSpec(
     'cx-seed-6',
     'u-camp-daiki',
-    'trade',
-    '焚き火台（小）とランタンを交換します',
+    'shoot',
+    '焚き火で煮込んだカレーを撮影しました',
     'キャンプ場 フォーサイト 周辺',
-    '買い替えで余ったため交換希望です。'
-        'キャンプ場の管理棟前で受け渡しできます。',
+    '鉄鍋で1時間煮込みました。'
+        '焚き火を囲むキャンプ仲間を募集しています。',
     -0.6,
     -0.7,
     Duration(hours: 12),
@@ -496,11 +538,11 @@ const List<_ExchangeSeedSpec> _exchangeSeedSpecs = [
   _ExchangeSeedSpec(
     'cx-seed-7',
     'u-band-sora',
-    'wanted',
-    '中古のエレキギターの練習用アンプを探しています',
-    '市役所裏の公園 周辺',
-    '自宅練習用に探しています。状態は問いません。'
-        '公共の場所での受け渡し希望です。',
+    'post',
+    '来週はスタジオでセッションの予定です',
+    '音楽スタジオ 周辺',
+    '新しい曲を合わせます。ドラマーさんを募集中です。'
+        '一緒に演奏できる方、DMください。',
     -1.2,
     0.6,
     Duration(hours: 30),
@@ -509,16 +551,16 @@ const List<_ExchangeSeedSpec> _exchangeSeedSpecs = [
   _ExchangeSeedSpec(
     'cx-seed-8',
     'u-futsal-taiga',
-    'trade',
-    'サッカーボール（使用済み・状態良好）と交換します',
+    'match',
+    '地区大会の予選を戦ってきました',
     '区民体育館 周辺',
-    '練習球が増えたため交換希望です。'
-        '体育館の入口前で受け渡しできます。',
+    '2-1で勝利しました。次の試合の'
+        '参加・応援仲間を募集しています。',
     0.7,
     -1.2,
     Duration(hours: 18),
   ),
-  // ---- コスとも！ハブ（撮影報告）
+  // ---- コスとも！ハブ（近況報告・絵）
   _ExchangeSeedSpec(
     'cx-seed-9',
     'u-anime-rei',
@@ -534,11 +576,11 @@ const List<_ExchangeSeedSpec> _exchangeSeedSpecs = [
   _ExchangeSeedSpec(
     'cx-seed-10',
     'u-comic-nana',
-    'spot',
-    '駅東側のレンガ倉庫がおすすめ',
-    '駅東側のイベント会場横',
-    '平日は人が少なく撮りやすいです。手前の路地も'
-        '雰囲気が出ます。朝の光がおすすめ。',
+    'post',
+    '次のイベントに向けて衣装を作っています',
+    '駅東側のイベント会場',
+    'ウィッグのスタイリングに挑戦中です。'
+        '同じ作品好きの人と交流したいです。',
     1.1,
     -0.9,
     Duration(hours: 5),
@@ -554,6 +596,81 @@ const List<_ExchangeSeedSpec> _exchangeSeedSpecs = [
     -0.4,
     -0.2,
     Duration(hours: 16),
+  ),
+  // ---- 犬とも！ハブ
+  _ExchangeSeedSpec(
+    'cx-seed-12',
+    'u-sanpo-yuki',
+    'shoot',
+    'わんぱく公園でアジリティ練習を撮影しました',
+    'わんぱく公園 周辺',
+    '初めてのトンネルをクリアしました。'
+        '一緒に遊ぶワンコと飼い主さんを募集しています。',
+    0.4,
+    0.9,
+    Duration(hours: 3),
+  ),
+  _ExchangeSeedSpec(
+    'cx-seed-13',
+    'u-sanpo-yuki',
+    'post',
+    '今週末はドッグランのオフ会の予定です',
+    'ドッグラン 周辺',
+    'うちの子も犬友達を探しています。'
+        '参加してくれる方、DMください。',
+    -0.3,
+    0.6,
+    Duration(hours: 8),
+  ),
+  // ---- 猫とも（ニーアキャット）ハブ
+  _ExchangeSeedSpec(
+    'cx-seed-14',
+    'u-catcafe-moka',
+    'shoot',
+    '窓辺で日向ぼっこの愛猫を撮影しました',
+    '自宅の窓辺',
+    'いつもの定位置で気持ちよさそうでした。'
+        '同じ猫好きさんの写真も見てみたいです。',
+    -0.5,
+    0.35,
+    Duration(hours: 6),
+  ),
+  _ExchangeSeedSpec(
+    'cx-seed-15',
+    'u-catcafe-moka',
+    'post',
+    '新しいねこカフェを見つけました',
+    '駅東側の商店街',
+    '改装オープンしたばかりだそうです。'
+        '今週末に行ってみます。おすすめのねこカフェも教えてください。',
+    0.6,
+    -0.45,
+    Duration(hours: 20),
+  ),
+  // ---- 飯とも！ハブ
+  _ExchangeSeedSpec(
+    'cx-seed-16',
+    'u-ramen-ken',
+    'shoot',
+    '駅前の二郎系で極太麺を撮影しました',
+    '駅の北口',
+    'ニンニク増しで挑みました。'
+        '一緒に行ける飯ともを募集しています。',
+    0.2,
+    -0.8,
+    Duration(hours: 2),
+  ),
+  _ExchangeSeedSpec(
+    'cx-seed-17',
+    'u-ramen-ken',
+    'event',
+    'ラーメンオフ会を開催しました',
+    '駅前 周辺',
+    '3軒はしごで大盛り上がりでした。'
+        '次回も開催予定です。参加希望はDMください。',
+    -0.8,
+    0.4,
+    Duration(hours: 26),
   ),
 ];
 

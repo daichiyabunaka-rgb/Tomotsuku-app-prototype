@@ -437,26 +437,41 @@ class GameGoodsExchange {
   /// 交換します（グッズ系）
   bool get isTrade => kind == 'trade';
 
-  /// 撮影報告（コスとも！ハブ）
+  /// 近況報告系の種別（各ハブの投稿ボード）
   bool get isShootReportKind =>
-      kind == 'shoot' || kind == 'spot' || kind == 'event' || kind == 'art';
+      kind == 'shoot' ||
+      kind == 'post' ||
+      kind == 'event' ||
+      kind == 'art' ||
+      kind == 'match' ||
+      kind == 'agari' ||
+      kind == 'catch';
 }
 
 /// 投稿ボードの種別ごとの注意文言（登録シートで使う）。
 String exchangeKindNote(String kind) {
   switch (kind) {
     case 'shoot':
-      return '撮ってきたコスプレ写真の報告です。\n'
+      return '撮影した写真の報告です。\n'
           '※本人が写る画像は本人・撮影者の許諾を得たものだけ投稿してください。';
-    case 'spot':
-      return 'おすすめの撮影スポット・状況の報告です。\n'
-          '※私有地・撮影禁止場所の無断撮影はやめましょう。';
+    case 'post':
+      return '近況・ひとことのつぶやきです。\n'
+          '※次の予定や近況など、ハブの仲間に伝えたいことを投稿しましょう。';
     case 'event':
-      return 'イベント会場での撮影報告です。\n'
-          '※会場の撮影規約・参加者の許諾を守ってください。';
+      return 'イベント・オフ会の報告です。\n'
+          '※会場の規約・参加者の許諾を守ってください。';
     case 'art':
       return '描いた絵・ファンアートの投稿です。\n'
           '※他人の作品の無断転載・トレースは禁止です。成人向けの画像も投稿できません。';
+    case 'match':
+      return '試合・練習の報告です。\n'
+          '※対戦相手・会場のルールと許諾を守ってください。';
+    case 'agari':
+      return '上がり（和了）の報告です。\n'
+          '※雀荘・会場のルールを守って投稿してください。';
+    case 'catch':
+      return '釣果の報告です。\n'
+          '※漁港・釣り場のルールを守り、禁漁区域では釣行しないでください。';
     case 'wanted':
       return '探しているものの登録です。\n'
           '※個人の住所・連絡先は記入しないでください。DMでやりとりしましょう。';

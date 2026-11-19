@@ -13,8 +13,8 @@ import 'widgets.dart';
 
 /// 投稿ボードのタブ（4つ目のタブ）。
 /// ハブごとの設定（HubConfig.exchangeKinds / exchangeLabel）で
-/// 「グッズのゆずりあい・交換」（give/wanted/trade）と
-/// 「撮影報告」（shoot/spot/event/art。コスとも！ハブ）を同じUIで使う。
+/// 「近況報告」（shoot/post/event等。内蔵ハブ）と
+/// 「グッズのゆずりあい・交換」（give/wanted/trade。UGCハブ）を同じUIで使う。
 class GameGoodsExchangesPage extends StatefulWidget {
   const GameGoodsExchangesPage({super.key});
 
@@ -76,8 +76,8 @@ class _GameGoodsExchangesPageState extends State<GameGoodsExchangesPage> {
                         ? '近くで登録された情報を近い順に表示します。使わなくなったグッズの'
                             'ゆずり合い・交換の募集をして、同じ趣味の仲間と'
                             'つながりましょう。'
-                        : '近くで報告された${hub.name}の投稿を近い順に表示します。'
-                            '報告を見て、撮影仲間や同じ作品の仲間とつながりましょう。',
+                        : '近くの${hub.name}参加者の近況を近い順に表示します。'
+                            '報告を見て、同じ趣味の仲間とつながりましょう。',
                     style: theme.textTheme.bodySmall,
                   ),
                   const SizedBox(height: 4),
